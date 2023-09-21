@@ -62,8 +62,6 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
     String[] labels;
     TextToSpeech textToSpeech;
     private static final int IMAGE_SIZE = 224;
-    public static int REQUEST_CAMERA = 111;
-    public static int REQUEST_GALLERY = 222;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -226,16 +224,10 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         }
         super.onDestroy();
     }
-
     private void HablarPorTexto() {
         String text = txtLugar.getText().toString();
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            textToSpeech.speak(text, TextToSpeech.QUEUE_FLUSH, null, null);
-        }
-        else {
-            textToSpeech.speak(text, TextToSpeech.QUEUE_FLUSH, null);
-        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {textToSpeech.speak(text, TextToSpeech.QUEUE_FLUSH, null, null);}
+        else {textToSpeech.speak(text, TextToSpeech.QUEUE_FLUSH, null);}
     }
     private void ProcesarImagenyModelo() {
         imageConverter.run();
