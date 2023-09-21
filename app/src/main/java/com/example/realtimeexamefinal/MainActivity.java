@@ -1,75 +1,65 @@
 package com.example.realtimeexamefinal;
-
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.Manifest;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.os.CountDownTimer;
 import android.speech.tts.TextToSpeech;
 import android.widget.TextView;
 import java.util.ArrayList;
-
-
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraManager;
 import android.media.Image;
 import android.media.ImageReader;
-import android.media.ThumbnailUtils;
 import android.os.AsyncTask;
 import android.os.Build;
-
-import android.os.Handler;
-import android.provider.MediaStore;
-import android.speech.tts.TextToSpeech;
-import android.util.Log;
 import android.util.Size;
 import android.view.Surface;
-import android.view.View;
-
-
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
-
 import com.example.realtimeexamefinal.ml.ModelUnquant;
-
-
 import org.tensorflow.lite.DataType;
 import org.tensorflow.lite.support.tensorbuffer.TensorBuffer;
-
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-
-import java.util.Arrays;
 import java.util.Locale;
 import java.util.Scanner;
-
 import camerax.CameraConnectionFragment;
 import camerax.ImageUtils;
-
 
 public class MainActivity extends AppCompatActivity implements TextToSpeech.OnInitListener, ImageReader.OnImageAvailableListener {
     ArrayList<String> permisosNoAprobados;
     TextView txtLugar;
     String[] labels;
-    TextToSpeech textToSpeech;
+    int i;
     private static final int IMAGE_SIZE = 224;
+    TextToSpeech textToSpeech;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         txtLugar = findViewById(R.id.txtresultados);
         textToSpeech = new TextToSpeech(this, this);
-        leerlabels();
+        leertxt();
         checkpermisos();
+    }
+
+    public void leertxt(){
+        i = 0;
+        labels = new String[1001];
+        try {
+            Scanner escaneado = new Scanner(getAssets().open("labels.txt"));
+            while (escaneado.hasNextLine() && i < 1001) {
+                String linea = escaneado.nextLine();
+                labels[i] = linea;
+                i++;
+            }
+            escaneado.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
     public void checkpermisos(){
         ArrayList<String> perms = new ArrayList<String>();
@@ -79,21 +69,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         permisosNoAprobados = getPermisosNoAprobados(perms);
         requestPermissions(permisosNoAprobados.toArray(new String[permisosNoAprobados.size()]), 100);
     }
-    public void leerlabels(){
-        labels = new String[1001];
-        int i = 0;
-        try {
-            Scanner scanner = new Scanner(getAssets().open("labels.txt"));
-            while (scanner.hasNextLine() && i < 1001) {
-                String linea = scanner.nextLine();
-                labels[i] = linea;
-                i++;
-            }
-            scanner.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
